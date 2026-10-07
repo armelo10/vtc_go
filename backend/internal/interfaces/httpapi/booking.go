@@ -61,7 +61,7 @@ func (h *bookingHandler) create(w http.ResponseWriter, r *http.Request) {
 		ScheduledAt:    req.ScheduledAt.UTC(),
 		Currency:       "EUR",
 	}
-	if entity.ScheduledAt.IsZero() {
+	if entity.ScheduledAt.IsZero() && serviceType == booking.ServiceTaxi {
 		entity.ScheduledAt = now
 	}
 	if err := entity.Validate(); err != nil {
