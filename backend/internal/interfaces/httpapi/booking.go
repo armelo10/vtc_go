@@ -20,7 +20,7 @@ type createBookingRequest struct {
 	PickupAddress  string              `json:"pickup_address"`
 	DropoffAddress string              `json:"dropoff_address"`
 	ServiceType    booking.ServiceType `json:"service_type"`
-	ScheduledAt   time.Time           `json:"scheduled_at"`
+	ScheduledAt    time.Time           `json:"scheduled_at"`
 }
 
 func newBookingHandler(repo *postgres.BookingRepository) *bookingHandler {
