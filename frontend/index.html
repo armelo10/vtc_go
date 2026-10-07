@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VTC Go — Réserver un trajet</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="./">VTC<span>Go</span></a>
+    <nav><a href="#reservation">Réserver</a><a href="#trajets">Mes trajets</a><button class="login" id="loginBtn">Connexion</button></nav>
+  </header>
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">Mobilité premium, simplement.</p>
+        <h1>Votre chauffeur.<br><span>Votre trajet.</span></h1>
+        <p class="lead">Réservez un VTC maintenant ou planifiez votre course à l'avance. Une expérience pensée pour les passagers, les chauffeurs et les entreprises.</p>
+        <div class="trust"><span>✓ Réservation préalable</span><span>✓ Prix estimé</span><span>✓ Suivi du chauffeur</span></div>
+      </div>
+      <div class="booking-card" id="reservation">
+        <div class="tabs"><button class="tab active" data-type="now">Maintenant</button><button class="tab" data-type="later">Planifier</button></div>
+        <form id="bookingForm">
+          <label>Départ<input id="pickup" required placeholder="Adresse de départ" autocomplete="street-address"></label>
+          <label>Destination<input id="dropoff" required placeholder="Où allez-vous ?" autocomplete="street-address"></label>
+          <div class="row" id="scheduleRow" hidden><label>Date<input id="date" type="date"></label><label>Heure<input id="time" type="time"></label></div>
+          <label>Service<select id="service"><option value="VTC">VTC — véhicule avec chauffeur</option><option value="TAXI">Taxi</option></select></label>
+          <button class="primary" type="submit">Estimer mon trajet <span>→</span></button>
+        </form>
+        <div id="quote" class="quote" hidden></div>
+      </div>
+    </section>
+    <section class="features">
+      <article><div class="icon">⌖</div><h3>Chauffeurs vérifiés</h3><p>Documents professionnels et véhicules suivis par notre moteur de conformité.</p></article>
+      <article><div class="icon">◷</div><h3>À l'heure</h3><p>Réservation immédiate ou programmée, avec suivi de l'arrivée du chauffeur.</p></article>
+      <article><div class="icon">€</div><h3>Prix transparent</h3><p>Une estimation claire avant la réservation et un historique de vos trajets.</p></article>
+    </section>
+    <section class="dashboard" id="trajets">
+      <div><p class="eyebrow">Votre espace</p><h2>Tout votre parcours au même endroit.</h2><p>Cette interface constitue la première brique du produit. Les prochaines versions connecteront l'authentification, les réservations, le paiement et le suivi temps réel au backend Go.</p></div>
+      <div class="status-card"><span class="dot"></span><strong>Plateforme opérationnelle</strong><small>API &amp; PostgreSQL en cours d'intégration</small></div>
+    </section>
+  </main>
+  <footer><span>© 2026 VTC Go</span><span>Passager · Chauffeur · Entreprise · Administration</span></footer>
+  <script src="./app.js"></script>
+</body>
+</html>
