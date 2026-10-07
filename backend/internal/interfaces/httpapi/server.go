@@ -49,13 +49,23 @@ func NewServer(cfg config.Config, pool *pgxpool.Pool) *Server {
 }
 
 func (s *Server) Handler() http.Handler {
-	return requestID(s.mux)
+	return requestID(cors(s.mux, s.cfg.AllowedOrigin))
 }
 
 func writeJSON(w http.ResponseWriter, status int, value any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
 	_ = json.NewEncoder(w).Encode(value)
+}
+
+func cors(next http.Handler, origin string) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+		w.Header().Set("Access-Control-Allow-Headers", "Authorization, Content-Type, X-Request-ID")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		if r.Method == http.MethodOptions { w.WriteHeader(http.StatusNoContent); return }
+		next.ServeHTTP(w, r)
+	})
 }
 
 func requestID(next http.Handler) http.Handler {
