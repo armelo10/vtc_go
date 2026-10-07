@@ -8,8 +8,8 @@ import (
 type ServiceType string
 
 const (
-	ServiceVTC   ServiceType = "VTC"
-	ServiceTaxi  ServiceType = "TAXI"
+	ServiceVTC  ServiceType = "VTC"
+	ServiceTaxi ServiceType = "TAXI"
 )
 
 type Status string
