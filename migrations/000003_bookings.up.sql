@@ -1,0 +1,25 @@
+CREATE TABLE bookings (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    passenger_id uuid NOT NULL REFERENCES passengers(user_id),
+    service_type text NOT NULL DEFAULT 'VTC' CHECK (service_type IN ('VTC','TAXI')),
+    status text NOT NULL DEFAULT 'REQUESTED',
+    pickup_address text NOT NULL,
+    dropoff_address text NOT NULL,
+    pickup_point geography(Point,4326),
+    dropoff_point geography(Point,4326),
+    scheduled_at timestamptz NOT NULL,
+    requested_at timestamptz NOT NULL DEFAULT now(),
+    assigned_driver_id uuid REFERENCES drivers(user_id),
+    vehicle_id uuid REFERENCES vehicles(id),
+    estimated_amount_cents bigint,
+    final_amount_cents bigint,
+    currency char(3) NOT NULL DEFAULT 'EUR',
+    cancelled_at timestamptz,
+    created_at timestamptz NOT NULL DEFAULT now(),
+    updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX bookings_pickup_gix ON bookings USING gist (pickup_point);
+CREATE INDEX bookings_dropoff_gix ON bookings USING gist (dropoff_point);
+CREATE INDEX bookings_driver_status_idx ON bookings (assigned_driver_id, status);
+CREATE INDEX bookings_scheduled_idx ON bookings (scheduled_at);
