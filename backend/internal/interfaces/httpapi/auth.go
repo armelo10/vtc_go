@@ -100,7 +100,7 @@ func requireAuth(repo *postgres.AuthRepository, next http.Handler) http.Handler 
 			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid or expired session"})
 			return
 		}
-		next.ServeHTTP(withUser(r, user), w)
+		next.ServeHTTP(w, withUser(r, user))
 	})
 }
 
