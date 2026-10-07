@@ -7,6 +7,7 @@ type Config struct {
 	DatabaseURL string
 	RedisURL    string
 	Environment string
+	AllowedOrigin string
 }
 
 func Load() Config {
@@ -15,6 +16,7 @@ func Load() Config {
 		DatabaseURL: env("DATABASE_URL", "postgres://vtc:vtc@localhost:5432/vtc?sslmode=disable"),
 		RedisURL:    env("REDIS_URL", "redis://localhost:6379/0"),
 		Environment: env("APP_ENV", "development"),
+		AllowedOrigin: env("ALLOWED_ORIGIN", "*"),
 	}
 }
 
