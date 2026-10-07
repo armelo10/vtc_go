@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/armelo10/vtc_go/backend/internal/domain/auth"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -65,4 +65,7 @@ func (r *AuthRepository) FindSession(ctx context.Context, tokenHash string) (aut
 	return user, expiresAt, err
 }
 
-var _ = pgx.ErrNoRows
+func isUniqueViolation(err error) bool {
+	var pgErr *pgconn.PgError
+	return errors.As(err, &pgErr) && pgErr.Code == "23505"
+}
