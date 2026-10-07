@@ -14,12 +14,18 @@ jobs:
         with:
           go-version: "1.24.x"
           cache: true
-      - name: Format
-        run: test -z "$(gofmt -l backend)"
+      - name: Format check
+        run: |
+          files="$(gofmt -l backend)"
+          if [ -n "$files" ]; then
+            echo "Unformatted Go files:"
+            echo "$files"
+            exit 1
+          fi
       - name: Test
         run: go test ./...
       - name: Build
-        run: go build ./backend/cmd/api
+        run: go build -trimpath -buildvcs=false ./...
   postgres:
     runs-on: ubuntu-latest
     services:
