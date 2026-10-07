@@ -6,7 +6,10 @@ import (
 	"time"
 
 	"github.com/armelo10/vtc_go/backend/internal/infrastructure/config"
+	pricingapp "github.com/armelo10/vtc_go/backend/internal/application/pricing"
+	"github.com/armelo10/vtc_go/backend/internal/domain/pricing"
 	"github.com/armelo10/vtc_go/backend/internal/infrastructure/postgres"
+	"github.com/armelo10/vtc_go/backend/internal/infrastructure/routing"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -21,6 +24,7 @@ func NewServer(cfg config.Config, pool *pgxpool.Pool) *Server {
 	auth := newAuthHandler(authRepo)
 	bookingRepo := postgres.NewBookingRepository(pool)
 	bookings := newBookingHandler(bookingRepo)
+	pricing := newPricingHandler(pricingapp.NewService(routing.NewStraightLineProvider(30), pricing.Engine{BaseCentsPerKm: 150, MinuteCents: 50}))
 	server := &Server{cfg: cfg, pool: pool, mux: http.NewServeMux()}
 	server.mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"status": "ok", "service": "vtc-api"})
@@ -37,6 +41,7 @@ func NewServer(cfg config.Config, pool *pgxpool.Pool) *Server {
 	server.mux.Handle("GET /api/v1/me", requireAuth(authRepo, http.HandlerFunc(auth.me)))
 	server.mux.Handle("POST /api/v1/bookings", requireAuth(authRepo, http.HandlerFunc(bookings.create)))
 	server.mux.Handle("GET /api/v1/bookings/{id}", requireAuth(authRepo, http.HandlerFunc(bookings.get)))
+	server.mux.Handle("POST /api/v1/pricing/estimate", requireAuth(authRepo, http.HandlerFunc(pricing.estimate)))
 	server.mux.HandleFunc("GET /api/v1", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]string{"version": "v1"})
 	})
