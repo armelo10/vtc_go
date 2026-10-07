@@ -17,6 +17,8 @@ type Server struct {
 }
 
 func NewServer(cfg config.Config, pool *pgxpool.Pool) *Server {
+	authRepo := postgres.NewAuthRepository(pool)
+	auth := newAuthHandler(authRepo)
 	server := &Server{cfg: cfg, pool: pool, mux: http.NewServeMux()}
 	server.mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"status": "ok", "service": "vtc-api"})
@@ -28,6 +30,9 @@ func NewServer(cfg config.Config, pool *pgxpool.Pool) *Server {
 		}
 		writeJSON(w, http.StatusOK, map[string]any{"status": "ready", "environment": cfg.Environment})
 	})
+	server.mux.HandleFunc("POST /api/v1/auth/register", auth.register)
+	server.mux.HandleFunc("POST /api/v1/auth/login", auth.login)
+	server.mux.Handle("GET /api/v1/me", requireAuth(authRepo, http.HandlerFunc(auth.me)))
 	server.mux.HandleFunc("GET /api/v1", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]string{"version": "v1"})
 	})
