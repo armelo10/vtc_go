@@ -6,19 +6,26 @@ import (
 	"time"
 
 	"github.com/armelo10/vtc_go/backend/internal/infrastructure/config"
+	"github.com/armelo10/vtc_go/backend/internal/infrastructure/postgres"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Server struct {
-	cfg config.Config
-	mux *http.ServeMux
+	cfg  config.Config
+	pool *pgxpool.Pool
+	mux  *http.ServeMux
 }
 
-func NewServer(cfg config.Config) *Server {
-	server := &Server{cfg: cfg, mux: http.NewServeMux()}
+func NewServer(cfg config.Config, pool *pgxpool.Pool) *Server {
+	server := &Server{cfg: cfg, pool: pool, mux: http.NewServeMux()}
 	server.mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, _ *http.Request) {
 		writeJSON(w, http.StatusOK, map[string]any{"status": "ok", "service": "vtc-api"})
 	})
-	server.mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, _ *http.Request) {
+	server.mux.HandleFunc("GET /readyz", func(w http.ResponseWriter, r *http.Request) {
+		if err := postgres.Ping(r.Context(), server.pool); err != nil {
+			writeJSON(w, http.StatusServiceUnavailable, map[string]any{"status": "not_ready", "reason": "database_unavailable"})
+			return
+		}
 		writeJSON(w, http.StatusOK, map[string]any{"status": "ready", "environment": cfg.Environment})
 	})
 	server.mux.HandleFunc("GET /api/v1", func(w http.ResponseWriter, _ *http.Request) {
