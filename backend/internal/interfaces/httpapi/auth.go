@@ -83,6 +83,27 @@ func (h *authHandler) login(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]any{"token": token, "expires_at": expires, "user": user})
 }
 
+func requireAuth(repo *postgres.AuthRepository, next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		header := r.Header.Get("Authorization")
+		if !strings.HasPrefix(header, "Bearer ") {
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "authentication required"})
+			return
+		}
+		token := strings.TrimSpace(strings.TrimPrefix(header, "Bearer "))
+		if token == "" {
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "authentication required"})
+			return
+		}
+		user, expiresAt, err := repo.FindSession(r.Context(), hashToken(token))
+		if err != nil || time.Now().UTC().After(expiresAt) {
+			writeJSON(w, http.StatusUnauthorized, map[string]string{"error": "invalid or expired session"})
+			return
+		}
+		next.ServeHTTP(withUser(r, user), w)
+	})
+}
+
 func (h *authHandler) me(w http.ResponseWriter, r *http.Request) {
 	user, ok := userFromContext(r.Context())
 	if !ok {
