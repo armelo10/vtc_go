@@ -53,7 +53,7 @@ func (h *bookingHandler) create(w http.ResponseWriter, r *http.Request) {
 	entity := booking.Booking{
 		ID:             newUUID(),
 		PassengerID:    user.ID,
-		PickupAddress: strings.TrimSpace(req.PickupAddress),
+		PickupAddress:  strings.TrimSpace(req.PickupAddress),
 		DropoffAddress: strings.TrimSpace(req.DropoffAddress),
 		ServiceType:    serviceType,
 		Status:         booking.Requested,
