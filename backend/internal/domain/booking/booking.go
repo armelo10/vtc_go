@@ -15,19 +15,19 @@ const (
 type Status string
 
 const (
-	Draft             Status = "DRAFT"
-	Requested         Status = "REQUESTED"
-	SearchingDriver   Status = "SEARCHING_DRIVER"
-	DriverAssigned    Status = "DRIVER_ASSIGNED"
-	DriverArriving    Status = "DRIVER_ARRIVING"
-	DriverAtPickup    Status = "DRIVER_AT_PICKUP"
-	PassengerOnboard  Status = "PASSENGER_ONBOARD"
-	InProgress        Status = "IN_PROGRESS"
-	Completed         Status = "COMPLETED"
-	Cancelled         Status = "CANCELLED"
-	Expired           Status = "EXPIRED"
-	NoShow            Status = "NO_SHOW"
-	Failed            Status = "FAILED"
+	Draft            Status = "DRAFT"
+	Requested        Status = "REQUESTED"
+	SearchingDriver  Status = "SEARCHING_DRIVER"
+	DriverAssigned   Status = "DRIVER_ASSIGNED"
+	DriverArriving   Status = "DRIVER_ARRIVING"
+	DriverAtPickup   Status = "DRIVER_AT_PICKUP"
+	PassengerOnboard Status = "PASSENGER_ONBOARD"
+	InProgress       Status = "IN_PROGRESS"
+	Completed        Status = "COMPLETED"
+	Cancelled        Status = "CANCELLED"
+	Expired          Status = "EXPIRED"
+	NoShow           Status = "NO_SHOW"
+	Failed           Status = "FAILED"
 )
 
 type Booking struct {
