@@ -1,0 +1,51 @@
+CREATE TABLE driver_locations (
+    driver_id uuid PRIMARY KEY REFERENCES drivers(user_id) ON DELETE CASCADE,
+    point geography(Point,4326) NOT NULL,
+    recorded_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX driver_locations_gix ON driver_locations USING gist (point);
+
+CREATE TABLE booking_proofs (
+    booking_id uuid PRIMARY KEY REFERENCES bookings(id) ON DELETE CASCADE,
+    operator_name text NOT NULL,
+    operator_phone text,
+    passenger_name text NOT NULL,
+    passenger_phone text,
+    reserved_at timestamptz NOT NULL,
+    pickup_at timestamptz NOT NULL,
+    revtc_number text,
+    siren text,
+    generated_at timestamptz NOT NULL DEFAULT now(),
+    proof_hash text NOT NULL
+);
+
+CREATE TABLE compliance_checks (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    driver_id uuid NOT NULL REFERENCES drivers(user_id),
+    booking_id uuid REFERENCES bookings(id),
+    eligible boolean NOT NULL,
+    reasons jsonb NOT NULL DEFAULT '[]'::jsonb,
+    checked_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE notifications (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL REFERENCES users(id),
+    channel text NOT NULL,
+    status text NOT NULL,
+    template text NOT NULL,
+    payload jsonb NOT NULL DEFAULT '{}'::jsonb,
+    sent_at timestamptz,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE TABLE audit_logs (
+    id bigserial PRIMARY KEY,
+    actor_user_id uuid REFERENCES users(id),
+    action text NOT NULL,
+    entity_type text NOT NULL,
+    entity_id uuid,
+    metadata jsonb NOT NULL DEFAULT '{}'::jsonb,
+    created_at timestamptz NOT NULL DEFAULT now()
+);
